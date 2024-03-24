@@ -1,6 +1,8 @@
 import streamlit as st
 import json
 import requests
+import os
+import pandas as pd
 from datetime import datetime
 import pytz
 
@@ -39,15 +41,6 @@ def get_current_datetime():
     current_time = datetime.now(tz)
     return current_time.strftime('%Y-%m-%d %H:%M:%S')
 
-# Function to calculate the estimate based on unit and quantity
-def calculate_estimate(unit, quantity):
-    if unit == "Pcs":
-        # Assuming 1 kg of chicken equals 4 pieces
-        return quantity * 4
-    elif unit == "KG":
-        # Assuming 1 piece of chicken weighs 0.25 kg
-        return quantity * 0.25
-
 def main():
     st.title("Commande")
 
@@ -80,8 +73,8 @@ def main():
 
         # Show order history
         st.subheader("Historique des commandes")
-        if len(st.session_state.order_history) > 0:
-            st.write(pd.DataFrame(st.session_state.order_history))
+        df = pd.DataFrame(st.session_state.order_history)
+        st.write(df)
 
 # Function to show the form
 def show_form():
@@ -91,22 +84,13 @@ def show_form():
     
     st.subheader("Unité")
     unite_options = ["Pcs", "KG"]
-    unite_selected = st.radio("Choisir une unité", unite_options, key="unit_input")
+    unite_selected = st.radio("Choisir une unité", unite_options)
 
     st.subheader("Dépôt")
     depot_options = ["Frais", "Surgelé"]
-    depot_selected = st.radio("Choisir un dépôt", depot_options, key="depot_input")
+    depot_selected = st.radio("Choisir un dépôt", depot_options)
 
     quantite_input = st.number_input("Quantité", 1, key="quantite_input")
-    
-    # Calculate and display estimate
-    estimate = calculate_estimate(unite_selected, quantite_input)
-    if unite_selected == "Pcs":
-        estimate_unit = "KG"
-    else:
-        estimate_unit = "Pcs"
-    st.write(f"Estimation: {estimate} {estimate_unit}")
-
     conditionnement_input = st.text_input("Conditionnement", "", key="conditionnement_input")
     autres_specifications_input = st.text_area("Autres spécifications", "", key="autres_specifications_input")
 
@@ -122,10 +106,6 @@ def show_form():
             "Autres spécifications": autres_specifications_input,
             "Username": st.session_state.username
         }
-        
-        # Add estimate to data
-        data["Estimation"] = estimate
-        
         # Send data to webhook
         try:
             response = requests.post(WEBHOOK_URL, json=data)
