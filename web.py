@@ -41,6 +41,7 @@ def get_current_datetime():
     current_time = datetime.now(tz)
     return current_time.strftime('%Y-%m-%d %H:%M:%S')
 
+
 # Function to calculate the estimate based on unit and quantity
 def calculate_estimate(unit, quantity):
     if unit == "Pcs":
