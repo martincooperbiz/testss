@@ -55,12 +55,16 @@ def save_to_csv(data, username):
     
     # Check if the directory exists, if not, create it
     if not os.path.exists(output_folder):
+        print(f"Creating directory: {output_folder}")  # Debug print
         os.makedirs(output_folder)
 
     with open(filepath, mode='w', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=data.keys())
         writer.writeheader()
         writer.writerow(data)
+    
+    print(f"CSV file saved to: {filepath}")  # Debug print
+
 
 def main():
     st.title("Commande")
