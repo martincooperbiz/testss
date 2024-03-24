@@ -6,9 +6,6 @@ import pandas as pd
 from datetime import datetime
 import pytz
 
-# Define the webhook URL
-WEBHOOK_URL = "https://hook.eu2.make.com/t2bw8tqskcutqtak5h60cwwa7mxb431v"
-
 # Function to authenticate user
 def authenticate(username, password):
     with open('user.json', 'r') as f:
@@ -119,26 +116,12 @@ def show_form():
         # Calculate estimate
         estimate = calculate_estimate(unite_selected, quantite_input)
         
-        # Add estimate to data
-        data["Estimation"] = estimate
+        # Display estimate
+        st.write(f"Estimation: {estimate} {'KG' if unite_selected == 'Pcs' else 'Pcs'}")
         
-        # Send data to webhook
-        try:
-            response = requests.post(WEBHOOK_URL, json=data)
-            if response.status_code == 200:
-                st.success("Commande envoyée avec succès !")
-                # Clear input fields
-                produit_input = ""
-                quantite_input = 1
-                conditionnement_input = ""
-                autres_specifications_input = ""
-                # Add data to order history
-                st.session_state.order_history.append(data)
-                save_order_history(st.session_state.order_history, st.session_state.username)  # Save order history to user's file
-            else:
-                st.error("Erreur lors de l'envoi de la commande.")
-        except Exception as e:
-            st.error(f"Une erreur s'est produite: {str(e)}")
+        # Add data to order history
+        st.session_state.order_history.append(data)
+        save_order_history(st.session_state.order_history, st.session_state.username)  # Save order history to user's file
 
 if __name__ == "__main__":
     main()
