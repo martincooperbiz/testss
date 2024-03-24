@@ -1,10 +1,13 @@
 import streamlit as st
 import json
+import requests
 import os
 import pandas as pd
 from datetime import datetime
 import pytz
-import csv
+
+# Define the webhook URL
+WEBHOOK_URL = "https://hook.eu2.make.com/t2bw8tqskcutqtak5h60cwwa7mxb431v"
 
 # Function to authenticate user
 def authenticate(username, password):
@@ -41,30 +44,11 @@ def get_current_datetime():
 # Function to calculate the estimate based on unit and quantity
 def calculate_estimate(unit, quantity):
     if unit == "Pcs":
-        # Assuming 1.5 kg of chicken equals 1 piece
+        # Assuming 1.5 kg of chicken equals 1 pieces
         return quantity * 1.5, "KG"
     elif unit == "KG":
         # Assuming 0.70 piece of chicken weighs 1 kg
         return quantity * 0.70, "Pcs"
-
-# Function to save transaction data to CSV file
-def save_to_csv(data, username):
-    output_folder = "C:/Users/anas/Desktop/d"  # Hardcoded folder path
-    filename = f"{username}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.csv"
-    filepath = os.path.join(output_folder, filename)
-    
-    # Check if the directory exists, if not, create it
-    if not os.path.exists(output_folder):
-        print(f"Creating directory: {output_folder}")  # Debug print
-        os.makedirs(output_folder)
-
-    with open(filepath, mode='w', newline='') as file:
-        writer = csv.DictWriter(file, fieldnames=data.keys())
-        writer.writeheader()
-        writer.writerow(data)
-    
-    print(f"CSV file saved to: {filepath}")  # Debug print
-
 
 def main():
     st.title("Commande")
@@ -102,10 +86,6 @@ def main():
         if not df.empty:
             df = df.drop(columns=["Estimation", "Estimation_Unit"], errors="ignore")  # Drop the estimation and its unit columns from display
             st.write(df)
-
-        # Save transaction data to CSV files
-        for transaction in st.session_state.order_history:
-            save_to_csv(transaction, st.session_state.username)
 
 # Function to show the form
 def show_form():
@@ -156,8 +136,12 @@ def show_form():
             "Username": st.session_state.username
         }
         
-        # Add data to order history
-        st.session_state.order_history.append(data)
+        # Send data to webhook (excluding estimation and its unit)
+        data_to_send = {key: value for key, value in data.items() if key not in ["Estimation", "Estimation_Unit"]}
+        response = requests.post(WEBHOOK_URL, json=data_to_send)
+        
+        # Add data to order history (excluding estimation and its unit)
+        st.session_state.order_history.append(data_to_send)
         save_order_history(st.session_state.order_history, st.session_state.username)  # Save order history to user's file
 
 if __name__ == "__main__":
