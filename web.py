@@ -89,26 +89,33 @@ def main():
 
 # Function to show the form
 def show_form():
-    st.subheader("Formulaire de Commande")
+    st.title("Commande de Produits")
+    st.write("Veuillez remplir le formulaire ci-dessous pour passer votre commande.")
 
-    produit_input = st.text_input("Produit", "", key="produit_input")
+    st.subheader("Produit")
+    produit_input = st.text_input("Nom du Produit", "", key="produit_input")
     
-    st.subheader("Unité")
-    unite_options = ["Pcs", "KG"]
-    unite_selected = st.radio("Choisir une unité", unite_options, key="unit_input")
+    # Layout columns for unit and depot selection
+    col1, col2 = st.columns(2)
+    with col1:
+        st.subheader("Unité")
+        unite_options = ["Pcs", "KG"]
+        unite_selected = st.radio("", unite_options, key="unit_input")
+    with col2:
+        st.subheader("Dépôt")
+        depot_options = ["Frais", "Surgelé"]
+        depot_selected = st.radio("", depot_options, key="depot_input")
 
-    st.subheader("Dépôt")
-    depot_options = ["Frais", "Surgelé"]
-    depot_selected = st.radio("Choisir un dépôt", depot_options, key="depot_input")
+    st.subheader("Quantité")
 
-    quantite_input = st.number_input("Quantité", 1, key="quantite_input")
-    
-    # Calculate and display estimate
-    estimate_unit = "unité" if quantite_input == 1 else "unités"
-    st.write(f"Estimation: {quantite_input} {estimate_unit}")
+    # Quantity input
+    quantite_input = st.number_input("", 1, key="quantite_input")
 
+    st.subheader("Conditionnement")
     conditionnement_input = st.text_input("Conditionnement", "", key="conditionnement_input")
-    autres_specifications_input = st.text_area("Autres spécifications", "", key="autres_specifications_input")
+
+    st.subheader("Autres Spécifications")
+    autres_specifications_input = st.text_area("Indiquez toutes les autres spécifications ici", "", key="autres_specifications_input")
 
     # Add other functionalities here if needed
 
