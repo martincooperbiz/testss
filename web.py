@@ -48,7 +48,8 @@ def calculate_estimate(unit, quantity):
         return quantity * 0.70, "Pcs"
 
 # Function to save transaction data to CSV file
-def save_to_csv(data, username, output_folder):
+def save_to_csv(data, username):
+    output_folder = "C:\\Users\\anas\\Desktop\\d"  # Hardcoded folder path
     filename = f"{username}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.csv"
     filepath = os.path.join(output_folder, filename)
     with open(filepath, mode='w', newline='') as file:
@@ -66,10 +67,6 @@ def main():
     # Check if user has order history
     if "order_history" not in st.session_state:
         st.session_state.order_history = load_order_history(st.session_state.username)
-
-    # Check if user has specified output folder
-    if "output_folder" not in st.session_state:
-        st.session_state.output_folder = ""
 
     # Login Section
     if st.session_state.username is None:
@@ -97,15 +94,9 @@ def main():
             df = df.drop(columns=["Estimation", "Estimation_Unit"], errors="ignore")  # Drop the estimation and its unit columns from display
             st.write(df)
 
-        # Select output folder
-        st.subheader("Sélectionner un dossier de sortie")
-        st.session_state.output_folder = st.text_input("Chemin du dossier de sortie (ex: C:\\Users\\anas\\Desktop\\d)", 
-                                                       st.session_state.output_folder)
-
         # Save transaction data to CSV files
         for transaction in st.session_state.order_history:
-            if st.session_state.output_folder:
-                save_to_csv(transaction, st.session_state.username, st.session_state.output_folder)
+            save_to_csv(transaction, st.session_state.username)
 
 # Function to show the form
 def show_form():
