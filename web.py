@@ -111,6 +111,9 @@ def show_form():
     # Layout columns for depot selection
     col3, col4 = st.columns(2)
     with col3:
+        st.write(" ")
+    with col4:
+        st.write("Dépôt")
         depot_options = ["Frais", "Surgelé"]
         depot_selected = st.radio("", depot_options, key="depot_input")
     
@@ -120,21 +123,6 @@ def show_form():
     st.subheader("Autres Spécifications")
     autres_specifications_input = st.text_area("Indiquez toutes les autres spécifications ici", "", key="autres_specifications_input")
 
-    # Layout columns for depot selection
-    col3, col4 = st.columns(2)
-    with col3:
-        st.write("Dépôt")
-    with col4:
-        depot_options = ["Frais", "Surgelé"]
-        depot_selected = st.radio("Choisir un dépôt", depot_options, key="depot_input")
-    
-    st.subheader("Conditionnement")
-    conditionnement_input = st.text_input("Conditionnement", "", key="conditionnement_input")
-
-    st.subheader("Autres Spécifications")
-    autres_specifications_input = st.text_area("Indiquez toutes les autres spécifications ici", "", key="autres_specifications_input")
-
-    
     if st.button("ENVOYER"):
         # Create JSON object with form data
         data = {
