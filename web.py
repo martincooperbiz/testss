@@ -41,6 +41,15 @@ def get_current_datetime():
     current_time = datetime.now(tz)
     return current_time.strftime('%Y-%m-%d %H:%M:%S')
 
+# Function to calculate the estimate based on unit and quantity
+def calculate_estimate(unit, quantity):
+    if unit == "Pcs":
+        # Assuming 1 kg of chicken equals 4 pieces
+        return quantity * 4
+    elif unit == "KG":
+        # Assuming 1 piece of chicken weighs 0.25 kg
+        return quantity * 0.25
+
 def main():
     st.title("Commande")
 
@@ -106,6 +115,13 @@ def show_form():
             "Autres spécifications": autres_specifications_input,
             "Username": st.session_state.username
         }
+        
+        # Calculate estimate
+        estimate = calculate_estimate(unite_selected, quantite_input)
+        
+        # Add estimate to data
+        data["Estimation"] = estimate
+        
         # Send data to webhook
         try:
             response = requests.post(WEBHOOK_URL, json=data)
