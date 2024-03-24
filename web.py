@@ -41,6 +41,15 @@ def get_current_datetime():
     current_time = datetime.now(tz)
     return current_time.strftime('%Y-%m-%d %H:%M:%S')
 
+# Function to calculate the estimate based on unit and quantity
+def calculate_estimate(unit, quantity):
+    if unit == "Pcs":
+        # Assuming 1 kg of chicken equals 4 pieces
+        return quantity * 4
+    elif unit == "KG":
+        # Assuming 1 piece of chicken weighs 0.25 kg
+        return quantity * 0.25
+
 def main():
     st.title("Commande")
 
@@ -84,15 +93,19 @@ def show_form():
     
     st.subheader("Unité")
     unite_options = ["Pcs", "KG"]
-    unite_selected = st.radio("Choisir une unité", unite_options)
+    unite_selected = st.radio("Choisir une unité", unite_options, key="unit_input")
 
     st.subheader("Dépôt")
     depot_options = ["Frais", "Surgelé"]
-    depot_selected = st.radio("Choisir un dépôt", depot_options)
+    depot_selected = st.radio("Choisir un dépôt", depot_options, key="depot_input")
 
     quantite_input = st.number_input("Quantité", 1, key="quantite_input")
     conditionnement_input = st.text_input("Conditionnement", "", key="conditionnement_input")
     autres_specifications_input = st.text_area("Autres spécifications", "", key="autres_specifications_input")
+    
+    # Calculate and display estimate
+    estimate = calculate_estimate(unite_selected, quantite_input)
+    st.write(f"Estimation: {estimate}")
 
     if st.button("ENVOYER"):
         # Create JSON object with form data
@@ -106,6 +119,10 @@ def show_form():
             "Autres spécifications": autres_specifications_input,
             "Username": st.session_state.username
         }
+        
+        # Add estimate to data
+        data["Estimation"] = estimate
+        
         # Send data to webhook
         try:
             response = requests.post(WEBHOOK_URL, json=data)
