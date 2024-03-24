@@ -47,8 +47,8 @@ def calculate_estimate(unit, quantity):
         # Assuming 1.5 kg of chicken equals 1 pieces
         return quantity * 1.5, "KG"
     elif unit == "KG":
-        # Assuming 0.25 piece of chicken weighs 1 kg
-        return quantity * 0.75, "Pcs"
+        # Assuming 0.75 piece of chicken weighs 1 kg
+        return quantity * 0.70, "Pcs"
 
 def main():
     st.title("Commande")
