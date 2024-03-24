@@ -88,7 +88,6 @@ def main():
             st.write(df)
 
 # Function to show the form
-# Function to show the form
 def show_form():
     st.title("Commande de Produits")
     st.write("Veuillez remplir le formulaire ci-dessous pour passer votre commande.")
@@ -111,7 +110,11 @@ def show_form():
 
     # Quantity input
     quantite_input = st.number_input("", 1, key="quantite_input")
-
+    
+    # Calculate and display estimate
+    estimate_unit = "unité" if quantite_input == 1 else "unités"
+    st.write(f"Estimation: {quantite_input} {estimate_unit}")
+    
     st.subheader("Conditionnement")
     conditionnement_input = st.text_input("Conditionnement", "", key="conditionnement_input")
 
