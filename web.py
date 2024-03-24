@@ -1,13 +1,10 @@
 import streamlit as st
 import json
-import requests
 import os
 import pandas as pd
 from datetime import datetime
 import pytz
-
-# Define the webhook URL
-WEBHOOK_URL = "https://hook.eu2.make.com/t2bw8tqskcutqtak5h60cwwa7mxb431v"
+import csv
 
 # Function to authenticate user
 def authenticate(username, password):
@@ -44,11 +41,20 @@ def get_current_datetime():
 # Function to calculate the estimate based on unit and quantity
 def calculate_estimate(unit, quantity):
     if unit == "Pcs":
-        # Assuming 1.5 kg of chicken equals 1 pieces
+        # Assuming 1.5 kg of chicken equals 1 piece
         return quantity * 1.5, "KG"
     elif unit == "KG":
         # Assuming 0.70 piece of chicken weighs 1 kg
         return quantity * 0.70, "Pcs"
+
+# Function to save transaction data to CSV file
+def save_to_csv(data, username, output_folder):
+    filename = f"{username}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.csv"
+    filepath = os.path.join(output_folder, filename)
+    with open(filepath, mode='w', newline='') as file:
+        writer = csv.DictWriter(file, fieldnames=data.keys())
+        writer.writeheader()
+        writer.writerow(data)
 
 def main():
     st.title("Commande")
@@ -60,6 +66,10 @@ def main():
     # Check if user has order history
     if "order_history" not in st.session_state:
         st.session_state.order_history = load_order_history(st.session_state.username)
+
+    # Check if user has specified output folder
+    if "output_folder" not in st.session_state:
+        st.session_state.output_folder = ""
 
     # Login Section
     if st.session_state.username is None:
@@ -86,6 +96,14 @@ def main():
         if not df.empty:
             df = df.drop(columns=["Estimation", "Estimation_Unit"], errors="ignore")  # Drop the estimation and its unit columns from display
             st.write(df)
+
+        # Select output folder
+        st.subheader("Sélectionner un dossier de sortie")
+        st.session_state.output_folder = st.sidebar.text_input("Dossier de sortie", st.session_state.output_folder)
+
+        # Save transaction data to CSV files
+        for transaction in st.session_state.order_history:
+            save_to_csv(transaction, st.session_state.username, st.session_state.output_folder)
 
 # Function to show the form
 def show_form():
@@ -136,12 +154,8 @@ def show_form():
             "Username": st.session_state.username
         }
         
-        # Send data to webhook (excluding estimation and its unit)
-        data_to_send = {key: value for key, value in data.items() if key not in ["Estimation", "Estimation_Unit"]}
-        response = requests.post(WEBHOOK_URL, json=data_to_send)
-        
-        # Add data to order history (excluding estimation and its unit)
-        st.session_state.order_history.append(data_to_send)
+        # Add data to order history
+        st.session_state.order_history.append(data)
         save_order_history(st.session_state.order_history, st.session_state.username)  # Save order history to user's file
 
 if __name__ == "__main__":
