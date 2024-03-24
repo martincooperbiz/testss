@@ -96,17 +96,26 @@ def show_form():
     produit_input = st.text_input("Nom du Produit", "", key="produit_input")
     
     st.subheader("Quantité et Unité")
-    quantite_input = st.number_input("Quantité", 1, key="quantite_input")
 
-    # Layout columns for unit selection
-    col1, col2 = st.columns(2)
+    # Layout columns for quantity and unit selection
+    col1, col2, col3 = st.columns([2, 1, 1])
     with col1:
-        st.write("Unité")
+        quantite_input = st.number_input("Quantité", 1, key="quantite_input")
     with col2:
+        st.write("Unité")
         unite_options = ["Pcs", "KG"]
-        unite_selected = st.selectbox("Choisir une unité", unite_options, key="unit_input")
+        unite_selected = st.selectbox("", unite_options, key="unit_input")
+    with col3:
+        st.write("Dépôt")
+        depot_options = ["Frais", "Surgelé"]
+        depot_selected = st.radio("", depot_options, key="depot_input")
+    
+    st.subheader("Conditionnement")
+    conditionnement_input = st.text_input("Conditionnement", "", key="conditionnement_input")
 
-    st.subheader("Dépôt")
+    st.subheader("Autres Spécifications")
+    autres_specifications_input = st.text_area("Indiquez toutes les autres spécifications ici", "", key="autres_specifications_input")
+
 
     # Layout columns for depot selection
     col3, col4 = st.columns(2)
