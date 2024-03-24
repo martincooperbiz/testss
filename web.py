@@ -45,13 +45,10 @@ def get_current_datetime():
 def calculate_estimate(unit, quantity):
     if unit == "Pcs":
         # Assuming 1 kg of chicken equals 4 pieces
-        estimate = quantity * 4
-        unit_display = "KG"
+        return quantity * 4, "KG"  # Estimation in KG
     elif unit == "KG":
         # Assuming 1 piece of chicken weighs 0.25 kg
-        estimate = quantity * 0.25
-        unit_display = "Pcs"
-    return estimate, unit_display
+        return quantity * 0.25, "Pcs"  # Estimation in Pcs
 
 def main():
     st.title("Commande")
@@ -86,7 +83,7 @@ def main():
         # Show order history
         st.subheader("Historique des commandes")
         df = pd.DataFrame(st.session_state.order_history)
-        df.drop(columns=["Unité"], inplace=True)  # Drop the unit column from display
+        df.drop(columns=["Estimation", "Unité"], inplace=True)  # Drop the estimation and unit columns from display
         st.write(df)
 
 # Function to show the form
@@ -106,8 +103,8 @@ def show_form():
     quantite_input = st.number_input("Quantité", 1, key="quantite_input")
     
     # Calculate and display estimate
-    estimate, unit_display = calculate_estimate(unite_selected, quantite_input)
-    st.write(f"Estimation: {estimate} {unit_display}")
+    estimate, estimation_unit = calculate_estimate(unite_selected, quantite_input)
+    st.write(f"Estimation: {estimate} {estimation_unit}")
 
     conditionnement_input = st.text_input("Conditionnement", "", key="conditionnement_input")
     autres_specifications_input = st.text_area("Autres spécifications", "", key="autres_specifications_input")
@@ -122,17 +119,15 @@ def show_form():
             "Dépôt": depot_selected,
             "Conditionnement": conditionnement_input,
             "Autres spécifications": autres_specifications_input,
-            "Estimation": estimate,  # Include the estimation value
             "Username": st.session_state.username
         }
         
-        # Send data to webhook (excluding the unit)
-        data_without_unit = data.copy()
-        del data_without_unit["Unité"]
-        # response = requests.post(WEBHOOK_URL, json=data_without_unit)
+        # Send data to webhook (excluding estimation and unit)
+        webhook_data = {key: value for key, value in data.items() if key not in ["Estimation", "Unité"]}
+        # response = requests.post(WEBHOOK_URL, json=webhook_data)
         
         # Add data to order history
-        st.session_state.order_history.append(data)
+        st.session_state.order_history.append(webhook_data)
         save_order_history(st.session_state.order_history, st.session_state.username)  # Save order history to user's file
 
 if __name__ == "__main__":
