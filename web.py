@@ -45,9 +45,9 @@ def get_current_datetime():
 def calculate_estimate(unit, quantity):
     if unit == "Pcs":
         # Assuming 1.5 kg of chicken equals 1 pieces
-        return quantity * 1.5, "KG"
+        return quantity / 1.5, "KG"
     elif unit == "KG":
-        # Assuming 0.75 piece of chicken weighs 1 kg
+        # Assuming 0.70 piece of chicken weighs 1 kg
         return quantity * 0.70, "Pcs"
 
 def main():
