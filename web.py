@@ -116,7 +116,6 @@ def show_form():
     st.subheader("Autres Spécifications")
     autres_specifications_input = st.text_area("Indiquez toutes les autres spécifications ici", "", key="autres_specifications_input")
 
-
     # Layout columns for depot selection
     col3, col4 = st.columns(2)
     with col3:
