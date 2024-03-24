@@ -1,8 +1,6 @@
 import streamlit as st
 import json
 import requests
-import os
-import pandas as pd
 from datetime import datetime
 import pytz
 
@@ -82,8 +80,8 @@ def main():
 
         # Show order history
         st.subheader("Historique des commandes")
-        df = pd.DataFrame(st.session_state.order_history)
-        st.write(df)
+        if len(st.session_state.order_history) > 0:
+            st.write(pd.DataFrame(st.session_state.order_history))
 
 # Function to show the form
 def show_form():
@@ -100,12 +98,17 @@ def show_form():
     depot_selected = st.radio("Choisir un dépôt", depot_options, key="depot_input")
 
     quantite_input = st.number_input("Quantité", 1, key="quantite_input")
-    conditionnement_input = st.text_input("Conditionnement", "", key="conditionnement_input")
-    autres_specifications_input = st.text_area("Autres spécifications", "", key="autres_specifications_input")
     
     # Calculate and display estimate
     estimate = calculate_estimate(unite_selected, quantite_input)
-    st.write(f"Estimation: {estimate}")
+    if unite_selected == "Pcs":
+        estimate_unit = "KG"
+    else:
+        estimate_unit = "Pcs"
+    st.write(f"Estimation: {estimate} {estimate_unit}")
+
+    conditionnement_input = st.text_input("Conditionnement", "", key="conditionnement_input")
+    autres_specifications_input = st.text_area("Autres spécifications", "", key="autres_specifications_input")
 
     if st.button("ENVOYER"):
         # Create JSON object with form data
