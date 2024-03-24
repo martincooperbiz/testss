@@ -98,15 +98,19 @@ def show_form():
     st.subheader("Quantité et Unité")
 
     # Layout columns for quantity and unit selection
-    col1, col2, col3 = st.columns([2, 1, 1])
+    col1, col2 = st.columns([3, 2])
     with col1:
         quantite_input = st.number_input("Quantité", 1, key="quantite_input")
     with col2:
         st.write("Unité")
         unite_options = ["Pcs", "KG"]
         unite_selected = st.selectbox("", unite_options, key="unit_input")
+
+    st.subheader("Dépôt")
+
+    # Layout columns for depot selection
+    col3, col4 = st.columns(2)
     with col3:
-        st.write("Dépôt")
         depot_options = ["Frais", "Surgelé"]
         depot_selected = st.radio("", depot_options, key="depot_input")
     
