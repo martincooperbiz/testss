@@ -5,7 +5,7 @@ from datetime import datetime
 import pytz
 
 # Define the webhook URL
-WEBHOOK_URL = "https://49win8x85gkbzcpq5ze9dr.streamlit.app/webhook/a6554989-c70a-486c-a7fe-52790cf59cea"
+WEBHOOK_URL = "https://49win8x85gkbzcpq5ze9dr.streamlit.app/webhook/422654c5-34ea-4790-9d72-d36fcb665d0f"
 
 # Function to get current date and time in Morocco (Rabat) timezone
 def get_current_datetime():
