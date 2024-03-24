@@ -89,26 +89,39 @@ def main():
 
 # Function to show the form
 def show_form():
-    st.subheader("Formulaire de Commande")
+    st.title("Commande de Produits")
+    st.write("Veuillez remplir le formulaire ci-dessous pour passer votre commande.")
 
-    produit_input = st.text_input("Produit", "", key="produit_input")
+    st.subheader("Produit")
+    produit_input = st.text_input("Nom du Produit", "", key="produit_input")
     
-    st.subheader("Unité")
-    unite_options = ["Pcs", "KG"]
-    unite_selected = st.radio("Choisir une unité", unite_options, key="unit_input")
+    st.subheader("Quantité et Unité")
+    quantite_input = st.number_input("Quantité", 1, key="quantite_input")
+
+    # Layout columns for unit selection
+    col1, col2 = st.columns(2)
+    with col1:
+        st.write("Unité")
+    with col2:
+        unite_options = ["Pcs", "KG"]
+        unite_selected = st.selectbox("Choisir une unité", unite_options, key="unit_input")
 
     st.subheader("Dépôt")
-    depot_options = ["Frais", "Surgelé"]
-    depot_selected = st.radio("Choisir un dépôt", depot_options, key="depot_input")
 
-    quantite_input = st.number_input("Quantité", 1, key="quantite_input")
+    # Layout columns for depot selection
+    col3, col4 = st.columns(2)
+    with col3:
+        st.write("Dépôt")
+    with col4:
+        depot_options = ["Frais", "Surgelé"]
+        depot_selected = st.radio("Choisir un dépôt", depot_options, key="depot_input")
     
-    # Calculate and display estimate
-    estimate, estimate_unit = calculate_estimate(unite_selected, quantite_input)
-    st.write(f"Estimation: {estimate} {estimate_unit}")
-
+    st.subheader("Conditionnement")
     conditionnement_input = st.text_input("Conditionnement", "", key="conditionnement_input")
-    autres_specifications_input = st.text_area("Autres spécifications", "", key="autres_specifications_input")
+
+    st.subheader("Autres Spécifications")
+    autres_specifications_input = st.text_area("Indiquez toutes les autres spécifications ici", "", key="autres_specifications_input")
+
     
     if st.button("ENVOYER"):
         # Create JSON object with form data
