@@ -83,6 +83,7 @@ def main():
         # Show order history
         st.subheader("Historique des commandes")
         df = pd.DataFrame(st.session_state.order_history)
+        df.drop(columns=["Estimation"], inplace=True)  # Drop the estimation column from display
         st.write(df)
 
 # Function to show the form
@@ -100,13 +101,14 @@ def show_form():
     depot_selected = st.radio("Choisir un dépôt", depot_options, key="depot_input")
 
     quantite_input = st.number_input("Quantité", 1, key="quantite_input")
-    conditionnement_input = st.text_input("Conditionnement", "", key="conditionnement_input")
-    autres_specifications_input = st.text_area("Autres spécifications", "", key="autres_specifications_input")
     
     # Calculate and display estimate
     estimate = calculate_estimate(unite_selected, quantite_input)
     st.write(f"Estimation: {estimate}")
 
+    conditionnement_input = st.text_input("Conditionnement", "", key="conditionnement_input")
+    autres_specifications_input = st.text_area("Autres spécifications", "", key="autres_specifications_input")
+    
     if st.button("ENVOYER"):
         # Create JSON object with form data
         data = {
@@ -120,19 +122,15 @@ def show_form():
             "Username": st.session_state.username
         }
         
-        # Add estimate to data
-        data["Estimation"] = estimate
-        
-        # Send data to webhook
+        # Send data to webhook (excluding estimation)
+        # Modify data to remove estimation
+        data_to_send = data.copy()
+        data_to_send.pop("Estimation", None)
+        # Send modified data to webhook
         try:
-            response = requests.post(WEBHOOK_URL, json=data)
+            response = requests.post(WEBHOOK_URL, json=data_to_send)
             if response.status_code == 200:
                 st.success("Commande envoyée avec succès !")
-                # Clear input fields
-                produit_input = ""
-                quantite_input = 1
-                conditionnement_input = ""
-                autres_specifications_input = ""
                 # Add data to order history
                 st.session_state.order_history.append(data)
                 save_order_history(st.session_state.order_history, st.session_state.username)  # Save order history to user's file
