@@ -80,9 +80,10 @@ def main():
         st.write(f"Connecté en tant que: {st.session_state.username}")
         show_form()
 
-        # Show order history
+        # Show order history (without Estimation column)
         st.subheader("Historique des commandes")
         df = pd.DataFrame(st.session_state.order_history)
+        df = df.drop('Estimation', axis=1)  # Remove Estimation column
         st.write(df)
 
 # Function to show the form
@@ -100,6 +101,11 @@ def show_form():
     depot_selected = st.radio("Choisir un dépôt", depot_options, key="depot_input")
 
     quantite_input = st.number_input("Quantité", 1, key="quantite_input")
+
+     # Calculate and display estimate with unit
+    estimate = calculate_estimate(unite_selected, quantite_input)
+    st.write(f"Estimation: {estimate} {unite_selected}")  # Display unit
+    
     conditionnement_input = st.text_input("Conditionnement", "", key="conditionnement_input")
     autres_specifications_input = st.text_area("Autres spécifications", "", key="autres_specifications_input")
 
