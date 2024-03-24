@@ -6,6 +6,9 @@ import pandas as pd
 from datetime import datetime
 import pytz
 
+# Define the webhook URL
+WEBHOOK_URL = "https://hook.eu2.make.com/t2bw8tqskcutqtak5h60cwwa7mxb431v"
+
 # Function to authenticate user
 def authenticate(username, password):
     with open('user.json', 'r') as f:
@@ -90,15 +93,19 @@ def show_form():
     
     st.subheader("Unité")
     unite_options = ["Pcs", "KG"]
-    unite_selected = st.radio("Choisir une unité", unite_options)
+    unite_selected = st.radio("Choisir une unité", unite_options, key="unit_input")
 
     st.subheader("Dépôt")
     depot_options = ["Frais", "Surgelé"]
-    depot_selected = st.radio("Choisir un dépôt", depot_options)
+    depot_selected = st.radio("Choisir un dépôt", depot_options, key="depot_input")
 
     quantite_input = st.number_input("Quantité", 1, key="quantite_input")
     conditionnement_input = st.text_input("Conditionnement", "", key="conditionnement_input")
     autres_specifications_input = st.text_area("Autres spécifications", "", key="autres_specifications_input")
+    
+    # Calculate and display estimate
+    estimate = calculate_estimate(unite_selected, quantite_input)
+    st.write(f"Estimation: {estimate}")
 
     if st.button("ENVOYER"):
         # Create JSON object with form data
@@ -113,15 +120,26 @@ def show_form():
             "Username": st.session_state.username
         }
         
-        # Calculate estimate
-        estimate = calculate_estimate(unite_selected, quantite_input)
+        # Add estimate to data
+        data["Estimation"] = estimate
         
-        # Display estimate
-        st.write(f"Estimation: {estimate} {'KG' if unite_selected == 'Pcs' else 'Pcs'}")
-        
-        # Add data to order history
-        st.session_state.order_history.append(data)
-        save_order_history(st.session_state.order_history, st.session_state.username)  # Save order history to user's file
+        # Send data to webhook
+        try:
+            response = requests.post(WEBHOOK_URL, json=data)
+            if response.status_code == 200:
+                st.success("Commande envoyée avec succès !")
+                # Clear input fields
+                produit_input = ""
+                quantite_input = 1
+                conditionnement_input = ""
+                autres_specifications_input = ""
+                # Add data to order history
+                st.session_state.order_history.append(data)
+                save_order_history(st.session_state.order_history, st.session_state.username)  # Save order history to user's file
+            else:
+                st.error("Erreur lors de l'envoi de la commande.")
+        except Exception as e:
+            st.error(f"Une erreur s'est produite: {str(e)}")
 
 if __name__ == "__main__":
     main()
