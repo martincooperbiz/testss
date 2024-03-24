@@ -48,10 +48,14 @@ def calculate_estimate(unit, quantity):
         return quantity * 0.70, "Pcs"
 
 # Function to save transaction data to CSV file
-def save_to_csv(data, username):
-    output_folder = "C:\\Users\\anas\\Desktop\\d"  # Hardcoded folder path
+def save_to_csv(data, username, output_folder):
     filename = f"{username}_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.csv"
     filepath = os.path.join(output_folder, filename)
+    
+    # Check if the directory exists, if not, create it
+    if not os.path.exists(output_folder):
+        os.makedirs(output_folder)
+
     with open(filepath, mode='w', newline='') as file:
         writer = csv.DictWriter(file, fieldnames=data.keys())
         writer.writeheader()
@@ -94,9 +98,15 @@ def main():
             df = df.drop(columns=["Estimation", "Estimation_Unit"], errors="ignore")  # Drop the estimation and its unit columns from display
             st.write(df)
 
+        # Select output folder
+        st.subheader("Sélectionner un dossier de sortie")
+        st.session_state.output_folder = st.text_input("Chemin du dossier de sortie (ex: C:\\Users\\anas\\Desktop\\d)", 
+                                                       st.session_state.output_folder)
+
         # Save transaction data to CSV files
         for transaction in st.session_state.order_history:
-            save_to_csv(transaction, st.session_state.username)
+            if st.session_state.output_folder:
+                save_to_csv(transaction, st.session_state.username, st.session_state.output_folder)
 
 # Function to show the form
 def show_form():
