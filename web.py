@@ -99,9 +99,8 @@ def main():
 
         # Select output folder
         st.subheader("Sélectionner un dossier de sortie")
-        uploaded_files = st.sidebar.file_uploader("Sélectionner un fichier", accept_multiple_files=True)
-        if uploaded_files:
-            st.session_state.output_folder = os.path.dirname(uploaded_files[0].name)
+        st.session_state.output_folder = st.text_input("Chemin du dossier de sortie (ex: C:\\Users\\anas\\Desktop\\d)", 
+                                                       st.session_state.output_folder)
 
         # Save transaction data to CSV files
         for transaction in st.session_state.order_history:
