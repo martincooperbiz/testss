@@ -99,11 +99,14 @@ def main():
 
         # Select output folder
         st.subheader("Sélectionner un dossier de sortie")
-        st.session_state.output_folder = st.sidebar.text_input("Dossier de sortie", st.session_state.output_folder)
+        uploaded_folder = st.sidebar.file_uploader("Sélectionner un dossier", type="directory")
+        if uploaded_folder:
+            st.session_state.output_folder = uploaded_folder.name
 
         # Save transaction data to CSV files
         for transaction in st.session_state.order_history:
-            save_to_csv(transaction, st.session_state.username, st.session_state.output_folder)
+            if st.session_state.output_folder:
+                save_to_csv(transaction, st.session_state.username, st.session_state.output_folder)
 
 # Function to show the form
 def show_form():
