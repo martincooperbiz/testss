@@ -88,6 +88,7 @@ def main():
             st.write(df)
 
 # Function to show the form
+# Function to show the form
 def show_form():
     st.title("Commande de Produits")
     st.write("Veuillez remplir le formulaire ci-dessous pour passer votre commande.")
@@ -106,16 +107,10 @@ def show_form():
         depot_options = ["Frais", "Surgelé"]
         depot_selected = st.radio("", depot_options, key="depot_input")
 
-    st.subheader("Quantité et Unité")
+    st.subheader("Quantité")
 
-    # Layout columns for quantity and unit selection
-    col3, col4 = st.columns([3, 2])
-    with col3:
-        quantite_input = st.number_input("Quantité", 1, key="quantite_input")
-    with col4:
-        st.write("Unité")
-        unite_options = ["Pcs", "KG"]
-        unite_selected = st.selectbox("", unite_options, key="unit_input")
+    # Quantity input
+    quantite_input = st.number_input("", 1, key="quantite_input")
 
     st.subheader("Conditionnement")
     conditionnement_input = st.text_input("Conditionnement", "", key="conditionnement_input")
