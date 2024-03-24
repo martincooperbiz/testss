@@ -83,8 +83,9 @@ def main():
         # Show order history
         st.subheader("Historique des commandes")
         df = pd.DataFrame(st.session_state.order_history)
-        df.drop(columns=["Estimation", "Estimation_Unit"], inplace=True)  # Drop the estimation and its unit columns from display
-        st.write(df)
+        if not df.empty:
+            df = df.drop(columns=["Estimation", "Estimation_Unit"], errors="ignore")  # Drop the estimation and its unit columns from display
+            st.write(df)
 
 # Function to show the form
 def show_form():
@@ -127,9 +128,7 @@ def show_form():
         response = requests.post(WEBHOOK_URL, json=data_to_send)
         
         # Add data to order history (excluding estimation and its unit)
-        data["Estimation"] = estimate
-        data["Estimation_Unit"] = estimate_unit
-        st.session_state.order_history.append(data)
+        st.session_state.order_history.append({key: value for key, value in data.items() if key not in ["Estimation", "Estimation_Unit"]})
         save_order_history(st.session_state.order_history, st.session_state.username)  # Save order history to user's file
 
 if __name__ == "__main__":
