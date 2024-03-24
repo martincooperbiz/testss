@@ -111,6 +111,10 @@ def show_form():
     # Quantity input
     quantite_input = st.number_input("", 1, key="quantite_input")
 
+    # Calculate and display estimate
+    estimate, estimate_unit = calculate_estimate(unite_selected, quantite_input)
+    st.write(f"Estimation: {estimate} {estimate_unit}")
+
     st.subheader("Conditionnement")
     conditionnement_input = st.text_input("Conditionnement", "", key="conditionnement_input")
 
@@ -137,7 +141,7 @@ def show_form():
         response = requests.post(WEBHOOK_URL, json=data_to_send)
         
         # Add data to order history (excluding estimation and its unit)
-        st.session_state.order_history.append({key: value for key, value in data.items() if key not in ["Estimation", "Estimation_Unit"]})
+        st.session_state.order_history.append(data_to_send)
         save_order_history(st.session_state.order_history, st.session_state.username)  # Save order history to user's file
 
 if __name__ == "__main__":
