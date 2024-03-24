@@ -90,7 +90,7 @@ def show_form():
     st.subheader("Formulaire de Commande")
 
     produit_input = st.text_input("Produit", "", key="produit_input")
-    
+
     st.subheader("Unité")
     unite_options = ["Pcs", "KG"]
     unite_selected = st.radio("Choisir une unité", unite_options, key="unit_input")
@@ -102,7 +102,7 @@ def show_form():
     quantite_input = st.number_input("Quantité", 1, key="quantite_input")
     conditionnement_input = st.text_input("Conditionnement", "", key="conditionnement_input")
     autres_specifications_input = st.text_area("Autres spécifications", "", key="autres_specifications_input")
-    
+
     # Calculate and display estimate
     estimate = calculate_estimate(unite_selected, quantite_input)
     st.write(f"Estimation: {estimate}")
@@ -114,16 +114,16 @@ def show_form():
             "Produit": produit_input,
             "Unité": unite_selected,
             "Quantité": quantite_input,
-            # Add estimate to data
-            data["Estimation"] = estimate
             "Dépôt": depot_selected,
             "Conditionnement": conditionnement_input,
             "Autres spécifications": autres_specifications_input,
             "Username": st.session_state.username
         }
-        
-        
-        
+
+        # Add estimate to data if applicable
+        if estimate:
+            data["Estimation"] = estimate
+
         # Send data to webhook
         try:
             response = requests.post(WEBHOOK_URL, json=data)
