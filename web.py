@@ -5,7 +5,7 @@ from datetime import datetime
 import pytz
 
 # Define the webhook URL
-WEBHOOK_URL = "https://hook.eu2.make.com/t2bw8tqskcutqtak5h60cwwa7mxb431v"
+WEBHOOK_URL = "https://your-domain.com/webhook/db256cf8-b9fa-4f88-ac5f-4565e3513f5e"
 
 # Function to get current date and time in Morocco (Rabat) timezone
 def get_current_datetime():
