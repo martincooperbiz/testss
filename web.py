@@ -115,7 +115,7 @@ def show_form():
             "Unité": unite_selected,
             "Quantité": quantite_input,
             # Add estimate to data
-        data["Estimation"] = estimate
+            data["Estimation"] = estimate
             "Dépôt": depot_selected,
             "Conditionnement": conditionnement_input,
             "Autres spécifications": autres_specifications_input,
