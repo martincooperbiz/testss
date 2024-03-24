@@ -1,7 +1,7 @@
 {
   "users": [
       { "username": "user1@gmail.com", "password": "password1" },
-      { "username": "user1", "password": "password1" },
+      { "username": "aaa", "password": "aaa" },
       { "username": "anass", "password": "anass" },
       { "username": "admin", "password": "admin" },
       { "username": "z", "password": "z" },
