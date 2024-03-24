@@ -80,10 +80,9 @@ def main():
         st.write(f"Connecté en tant que: {st.session_state.username}")
         show_form()
 
-        # Show order history (without Estimation column)
+        # Show order history
         st.subheader("Historique des commandes")
         df = pd.DataFrame(st.session_state.order_history)
-        df = df.drop('Estimation', axis=1)  # Remove Estimation column
         st.write(df)
 
 # Function to show the form
@@ -91,7 +90,7 @@ def show_form():
     st.subheader("Formulaire de Commande")
 
     produit_input = st.text_input("Produit", "", key="produit_input")
-
+    
     st.subheader("Unité")
     unite_options = ["Pcs", "KG"]
     unite_selected = st.radio("Choisir une unité", unite_options, key="unit_input")
@@ -101,14 +100,9 @@ def show_form():
     depot_selected = st.radio("Choisir un dépôt", depot_options, key="depot_input")
 
     quantite_input = st.number_input("Quantité", 1, key="quantite_input")
-
-     # Calculate and display estimate with unit
-    estimate = calculate_estimate(unite_selected, quantite_input)
-    st.write(f"Estimation: {estimate} {unite_selected}")  # Display unit
-    
     conditionnement_input = st.text_input("Conditionnement", "", key="conditionnement_input")
     autres_specifications_input = st.text_area("Autres spécifications", "", key="autres_specifications_input")
-
+    
     # Calculate and display estimate
     estimate = calculate_estimate(unite_selected, quantite_input)
     st.write(f"Estimation: {estimate}")
@@ -125,11 +119,10 @@ def show_form():
             "Autres spécifications": autres_specifications_input,
             "Username": st.session_state.username
         }
-
-        # Add estimate to data if applicable
-        if estimate:
-            data["Estimation"] = estimate
-
+        
+        # Add estimate to data
+        data["Estimation"] = estimate
+        
         # Send data to webhook
         try:
             response = requests.post(WEBHOOK_URL, json=data)
