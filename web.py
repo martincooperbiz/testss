@@ -45,10 +45,13 @@ def get_current_datetime():
 def calculate_estimate(unit, quantity):
     if unit == "Pcs":
         # Assuming 1 kg of chicken equals 4 pieces
-        return quantity * 4
+        estimate = quantity * 4
+        unit_label = "KG"
     elif unit == "KG":
         # Assuming 1 piece of chicken weighs 0.25 kg
-        return quantity * 0.25
+        estimate = quantity * 0.25
+        unit_label = "Pcs"
+    return estimate, unit_label
 
 def main():
     st.title("Commande")
@@ -102,9 +105,9 @@ def show_form():
 
     quantite_input = st.number_input("Quantité", 1, key="quantite_input")
     
-    # Calculate and display estimate
-    estimate = calculate_estimate(unite_selected, quantite_input)
-    st.write(f"Estimation: {estimate}")
+    # Calculate and display estimate with appropriate unit
+    estimate, unit_label = calculate_estimate(unite_selected, quantite_input)
+    st.write(f"Estimation: {estimate} {unit_label}")
 
     conditionnement_input = st.text_input("Conditionnement", "", key="conditionnement_input")
     autres_specifications_input = st.text_area("Autres spécifications", "", key="autres_specifications_input")
@@ -122,22 +125,17 @@ def show_form():
             "Username": st.session_state.username
         }
         
-        # Send data to webhook (excluding estimation)
-        # Modify data to remove estimation
+        # Send data to webhook (excluding the estimation)
+        # Modify the data dictionary if you want to send the estimation
         data_to_send = data.copy()
-        data_to_send.pop("Estimation", None)
-        # Send modified data to webhook
-        try:
-            response = requests.post(WEBHOOK_URL, json=data_to_send)
-            if response.status_code == 200:
-                st.success("Commande envoyée avec succès !")
-                # Add data to order history
-                st.session_state.order_history.append(data)
-                save_order_history(st.session_state.order_history, st.session_state.username)  # Save order history to user's file
-            else:
-                st.error("Erreur lors de l'envoi de la commande.")
-        except Exception as e:
-            st.error(f"Une erreur s'est produite: {str(e)}")
+        del data_to_send["Quantité"]
+        data_to_send["Estimation"] = estimate
+        data_to_send["Unité_estimation"] = unit_label
+        response = requests.post(WEBHOOK_URL, json=data_to_send)
+        
+        # Add data to order history
+        st.session_state.order_history.append(data)
+        save_order_history(st.session_state.order_history, st.session_state.username)  # Save order history to user's file
 
 if __name__ == "__main__":
     main()
